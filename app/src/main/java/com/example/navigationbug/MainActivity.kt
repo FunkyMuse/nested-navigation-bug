@@ -1,6 +1,7 @@
 package com.example.navigationbug
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -19,7 +20,9 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -47,7 +50,15 @@ class MainActivity : ComponentActivity() {
                     val navController = rememberAnimatedNavController(bottomSheetNavigator)
                     val bottomBarEntries = remember { setOf("home", "recent") }
                     val navBackStackEntry: NavBackStackEntry? by navController.currentBackStackEntryFlow.collectAsState(null)
-
+                    val route by remember {
+                        derivedStateOf { navBackStackEntry?.destination?.route }
+                    }
+                    LaunchedEffect(route) {
+                        Log.d(
+                            "Crash",
+                            "Current destination ${navBackStackEntry?.destination.toString()} with arguments ${navBackStackEntry?.arguments.toString()}"
+                        )
+                    }
                     ModalBottomSheetLayout(
                         bottomSheetNavigator = bottomSheetNavigator,
                     ) {
